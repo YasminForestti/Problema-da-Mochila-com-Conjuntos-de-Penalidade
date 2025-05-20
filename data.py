@@ -67,7 +67,7 @@ class Data:
 
     def set_forfeit_set(self):
         """
-        Set up the forfeit sets, their states, and penalties from the raw data.
+        Set up the forfeit sets, their limits, and penalties from the raw data.
         This method processes the penalty set definitions and their contents.
         """
         self._forfeit_sets = np.zeros((int(self.raw_data[0][0]), int(self.raw_data[0][1])), dtype=int)

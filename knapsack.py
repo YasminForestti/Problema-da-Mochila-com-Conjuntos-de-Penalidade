@@ -6,7 +6,7 @@ class Knapsack:
     A class representing a Knapsack with penalty sets.
     
     This class implements a knapsack problem variant where items can belong to penalty sets.
-    When items are added or removed, the profits of related items in the same penalty sets
+    When items are added the profits of related items in the same penalty sets
     are dynamically updated based on the current state of these sets.
     """
     def __init__(self, data: Data):
@@ -18,8 +18,7 @@ class Knapsack:
                         their profits, weights, and penalty sets.
         """
         self._max_weight = data.get_knapsack_max_weight()
-        self._initial_profits = data.get_initial_profits() # static profits
-        self._profits = data.get_initial_profits() # dynamic profits
+        self._profits = data.get_initial_profits()
         self._forfeit_sets = data.get_forfeit_sets() 
         self._forfeit_limits = data.get_forfeit_limits()
         self._forfeit_penalties = data.get_forfeit_penalties()
