@@ -17,6 +17,7 @@ class Knapsack:
             data (Data): A Data object containing all necessary information about items,
                         their profits, weights, and penalty sets.
         """
+        self.__data = data 
         self._max_weight = data.get_knapsack_max_weight()
         self._weights = data.get_weights()
         self._profits = data.get_initial_profits()
@@ -90,3 +91,29 @@ class Knapsack:
         weight = self._weights @ self._items.T
         return weight <= self._max_weight
     
+    def get_items(self):
+        """
+        Get the items in the knapsack.
+
+        Returns:
+            np.ndarray: A boolean array indicating which items are in the knapsack.
+        """
+        return self._items
+
+    def clone(self):
+        """
+        Create a clone of the knapsack.
+
+        Returns:
+            Knapsack: A new Knapsack object with the same state.
+        """
+        clone = Knapsack(self.__data)
+        clone._max_weight = self._max_weight
+        clone._weights = self._weights.copy()
+        clone._profits = self._profits.copy()
+        clone._forfeit_sets = self._forfeit_sets.copy()
+        clone._forfeit_limits = self._forfeit_limits.copy()
+        clone._forfeit_penalties = self._forfeit_penalties.copy()
+        clone._items = self._items.copy()
+        clone._penalties = self._penalties.copy()
+        return clone
