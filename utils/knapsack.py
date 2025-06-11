@@ -71,6 +71,12 @@ class Knapsack:
         if self._items[item_id] == 0:
             self._items[item_id] = 1 
     
+    def replace_items(self, items: np.ndarray):
+        """
+        Replace the items in the knapsack with a new set of items.
+        """
+        self._items = items
+    
     def remove_item(self, item_id):
         """
         Remove an item from the knapsack.
