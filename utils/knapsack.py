@@ -1,4 +1,4 @@
-from data import Data
+from utils.data import Data
 import numpy as np
 
 class Knapsack:

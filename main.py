@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env") 
 INSTANCES_PATH = os.getenv('INSTANCES')
 
-from data import Data
-from knapsack import Knapsack
+from utils.data import Data
+from utils.knapsack import Knapsack
 import numpy as np
 
 
