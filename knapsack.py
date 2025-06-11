@@ -90,7 +90,40 @@ class Knapsack:
         """
         weight = self._weights @ self._items.T
         return weight <= self._max_weight
-    
+
+    def is_future_adding_valid(self, item_id):
+        """
+        Check if adding an item in the future will keep the knapsack valid.
+
+        Args:
+            item_id (int): The ID of the item to check.
+
+        Returns:
+            bool: True if adding the item will keep the knapsack valid, False otherwise.
+        """
+        future_items = self._items.copy()
+        future_items[item_id] = 1
+        future_weight = self._weights @ future_items.T
+        return future_weight <= self._max_weight  
+
+    def get_total_weight(self):
+        """
+        Get the sum of weights of the items in the knapsack.
+
+        Returns:
+            np.float64: The total weight of the items in the knapsack.
+        """
+        return self._weights @ self._items.T
+
+    # def get_weights(self):
+    #     """
+    #     Get the weights of the items in the knapsack.
+
+    #     Returns:
+    #         np.ndarray: An array of weights for the items.
+    #     """
+    #     return self._weights
+
     def get_items(self):
         """
         Get the items in the knapsack.
