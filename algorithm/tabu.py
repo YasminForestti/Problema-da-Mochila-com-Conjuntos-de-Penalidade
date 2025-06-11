@@ -14,12 +14,13 @@ def  tabu_search(knapsack: Knapsack, max_iter: int, max_tabu_size: int):
         for neighbor in neighbors:
             current_knapsack = best_knapsack.clone()
             current_knapsack.replace_items(neighbor)
-            if neighbor not in tabu_list:
-                continue
             if current_knapsack.is_valid():
-                if current_knapsack.get_profit() > best_solution:
+                if neighbor not in tabu_list and current_knapsack.get_profit() > best_solution:
                     best_knapsack = current_knapsack
                     tabu_list.append(neighbor)
+                    if len(tabu_list) > max_tabu_size:
+                        tabu_list.pop(0)
+
         iter += 1
     return best_knapsack
 
