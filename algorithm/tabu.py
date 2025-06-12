@@ -3,26 +3,24 @@ from utils.knapsack import Knapsack
 import numpy as np
 
 def  tabu_search(knapsack: Knapsack, max_iter: int, max_tabu_size: int):
-    tabu_list = [knapsack.get_items()]
+    best_items = knapsack.get_items()
+    best_profit = knapsack.get_profit()
     iter = 0 
-    best_knapsack = knapsack.clone()
+    tabu_list = [best_items[:]]
     while iter < max_iter:
-        items = best_knapsack.get_items()
-        best_solution = best_knapsack.get_profit()
-        neighbors = _generate_neighbors(items)
-
+        neighbors = _generate_neighbors(best_items)
         for neighbor in neighbors:
-            current_knapsack = best_knapsack.clone()
-            current_knapsack.replace_items(neighbor)
-            if current_knapsack.is_valid():
-                if neighbor not in tabu_list and current_knapsack.get_profit() > best_solution:
-                    best_knapsack = current_knapsack
-                    tabu_list.append(neighbor)
-                    if len(tabu_list) > max_tabu_size:
-                        tabu_list.pop(0)
-
+            knapsack.replace_items(neighbor)
+            if knapsack.is_valid():
+                if not any(np.array_equal(neighbor, lst) for lst in tabu_list):
+                    if knapsack.get_profit() > best_profit:
+                        best_items = knapsack.get_items()
+                        best_profit = knapsack.get_profit()
+                        tabu_list.append(neighbor)
+                        if len(tabu_list) > max_tabu_size:
+                            tabu_list.pop(0)
         iter += 1
-    return best_knapsack
+    return best_items, best_profit
 
 def _generate_neighbors(items: np.ndarray):
     neighbors = []
@@ -30,3 +28,4 @@ def _generate_neighbors(items: np.ndarray):
         neighbor = items.copy()
         neighbor[i] = 1 if neighbor[i] == 0 else 0
         neighbors.append(neighbor)
+    return neighbors
