@@ -42,3 +42,25 @@ class model():
                     print(f'New best solution found with profit: {self.f_s_star}')
 
         return self.s_star
+    
+    def ILS(self,  criterio_parada):
+        construcao = tools.Construcao(alpha = 0.95)
+        new_items = construcao.LCR(self.mochila)
+        self.mochila.replace_items(new_items)
+        
+        melhor_items  = self.busca_local(self.mochila)
+        self.mochila.replace_items(melhor_items)
+
+        for _ in range(criterio_parada):
+            profit = self.mochila.get_profit()
+            items = self.mochila.get_items().copy()
+
+            s_linha_items = construcao.perturbação(self.mochila)
+            self.mochila.replace_items(s_linha_items)
+            
+            s_estrela_linha_items = self.busca_local(self.mochila)
+            self.mochila.replace_items(s_estrela_linha_items)
+            
+            if profit > self.mochila.get_profit():
+                self.mochila.replace_items(items)
+        return items

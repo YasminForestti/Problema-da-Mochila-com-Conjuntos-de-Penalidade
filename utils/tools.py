@@ -26,7 +26,31 @@ class Construcao:
             new_items[random_index] = 1
             mochila.replace_items(new_items)
         return current_items
-            
+
+    def perturbação(self,  mochila:Knapsack):
+        swap = 0
+
+        while mochila.is_valid():
+            itens = mochila.get_items()
+
+            dentro = np.where(itens == 1)[0]
+            fora = np.where(itens == 0)[0]
+            if swap < (len(dentro) * 0.1):
+
+                item_descartado = np.random.choice(dentro)
+                itens[item_descartado] = 0
+                mochila.replace_items(itens)
+
+                item_add = np.random.choice(fora)
+                new_items = itens.copy()
+                new_items[item_add] = 1
+                mochila.replace_items(new_items)
+
+                swap += 1
+            else: 
+                break
+        
+        return itens        
 
 
 
