@@ -62,7 +62,7 @@ class model():
             n_jobs (int): Número de threads paralelas.
         """
         self.buscalocal = tools.BuscaLocal()
-        self.construcao = tools.Construcao(alfa)
+        self.construcao = tools.Contrucao(alfa)
         results = []
         with ThreadPoolExecutor(max_workers=n_jobs) as executor:
             futures = [executor.submit(self._grasp_iteration, alfa, verbose) for _ in range(criterio_parada)]
