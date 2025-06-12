@@ -56,10 +56,14 @@ class BuscaLocal:
             profit = mochila.get_profit() 
             for j in fora:
                 if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
-                    mochila.add_item(j)
-                    melhor_mochila_itens = mochila.get_items().copy()
+                    vizinho_itens[j] = 1
+                    mochila.replace_items(vizinho_itens)
+
+                    melhor_mochila_itens = vizinho_itens.copy()
                     melhor_valor = mochila.get_profit()
-                    mochila.remove_item(j)     
+
+                    vizinho_itens[j] = 0
+                    mochila.replace_items(vizinho_itens)    
        
         return melhor_mochila_itens
     
@@ -71,19 +75,20 @@ class BuscaLocal:
         Retorna: nova mochila com melhor solução encontrada ou a própria mochila se não houver melhoria.
         """
         melhor_valor = mochila.get_profit()
-        print(f"Profit inicial : {melhor_valor}")
         itens = mochila.get_items()
 
         dentro = np.where(itens == 1)[0]
         fora = np.where(itens == 0)[0]
 
         for i in dentro:
-            vizinho = mochila.clone()
-            
-            vizinho.remove_item(i)
-            potencial_profit = vizinho.get_potential_profits()
-            profit = vizinho.get_profit() 
-            for j in fora:
-                if vizinho.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
-                    vizinho.add_item(j)
-                    return vizinho   
+            vizinho_itens = itens.copy()
+            vizinho_itens[i] = 0
+            mochila.replace_items(vizinho_itens) 
+
+            potencial_profit = mochila.get_potential_profits()  
+            profit = mochila.get_profit() 
+            for j in fora:          
+                if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
+                    vizinho_itens[j] = 1
+                    mochila.replace_items(vizinho_itens)
+                    return vizinho_itens
