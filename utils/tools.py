@@ -13,16 +13,14 @@ class Construcao:
         """
         while mochila.is_valid():
             current_items = mochila.get_items()
-            min_value = min(mochila.get_cost_benefit_ratio())
-            max_value = max(mochila.get_cost_benefit_ratio())
+            ratios = mochila.get_cost_benefit_ratio()
 
-            min_candidate = min_value + self.alpha * (max_value - min_value)
-            max_candidate = max_value
+            min_value = min(ratios)
+            max_value = max(ratios)
+            min_threshold = max_value - self.alpha*(max_value-min_value)
 
-            if self.alpha == 1:
-                random_index = np.random.choice(np.where(mochila.get_cost_benefit_ratio() >= (min_candidate - 0.0000000000001))[0])
-            else:
-                random_index = np.random.choice(np.where((mochila.get_cost_benefit_ratio() >= min_candidate) & (mochila.get_cost_benefit_ratio() <= max_candidate))[0])
+            lcr = [i for i in range(len(ratios)) if ratios[i] >= min_threshold]
+            random_index = np.random.choice(lcr)
 
             new_items = current_items.copy()
             new_items[random_index] = 1
