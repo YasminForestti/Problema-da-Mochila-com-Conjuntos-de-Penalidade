@@ -60,8 +60,8 @@ class BuscaLocal:
                     melhor_mochila_itens = mochila.get_items().copy()
                     melhor_valor = mochila.get_profit()
                     mochila.remove_item(j)     
-        melhor_mochila = mochila.replace_items(melhor_mochila_itens)
-        return melhor_mochila
+       
+        return melhor_mochila_itens
     
     def primeiro_aprimorante(self, mochila):
         """
