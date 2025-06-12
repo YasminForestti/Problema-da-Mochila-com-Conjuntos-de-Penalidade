@@ -10,7 +10,7 @@ import time
 load_dotenv(dotenv_path=".env") 
 INSTANCES_PATH = os.getenv('INSTANCES')
 
-data_1 = Data(f'{INSTANCES_PATH}/scenario1/correlated_sc1/1000/kpfs_2.txt')
+data_1 = Data(f'{INSTANCES_PATH}/scenario2/correlated_sc2/300/kpfs_1.txt')
 m = Knapsack(data_1)
 start_time = time.time()
 c = Construcao(1)
