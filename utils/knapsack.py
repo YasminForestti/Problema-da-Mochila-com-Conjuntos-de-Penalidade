@@ -75,7 +75,7 @@ class Knapsack:
         """
         Replace the items in the knapsack with a new set of items.
         """
-        self._items = items
+        self._items = np.array(items)
     
     def remove_item(self, item_id):
         """

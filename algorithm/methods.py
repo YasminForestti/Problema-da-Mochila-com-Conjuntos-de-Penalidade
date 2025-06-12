@@ -17,7 +17,7 @@ class model():
             criterio_parada (int): The stopping criterion for the GRASP algorithm.
         """
         buscalocal = tools.BuscaLocal()
-        construcao = tools.Contrucao(alfa)
+        construcao = tools.Construcao(alfa)
 
         for _ in range(criterio_parada):
             m = self.mochila.clone()
