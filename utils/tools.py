@@ -13,17 +13,16 @@ class Contrucao:
         """
         inter = 0
         while True:
-            #get min an max cost-benefit ratio with the index position 
-            min_index = np.argmin(mochila.get_cost_benefit_ratio())
-            max_index = np.argmax(mochila.get_cost_benefit_ratio())
-
-            min_value = mochila.get_cost_benefit_ratio()[min_index]
-            max_value = mochila.get_cost_benefit_ratio()[max_index]
+            min_value = min(mochila.get_cost_benefit_ratio())
+            max_value = max(mochila.get_cost_benefit_ratio())
 
             min_candidate = min_value + self.alpha * (max_value - min_value)
             max_candidate = max_value
 
-            random_index = np.random.choice(np.where((mochila.get_cost_benefit_ratio() >= min_candidate) & (mochila.get_cost_benefit_ratio() <= max_candidate))[0])
+            if self.alpha == 1:
+                random_index = np.random.choice(np.where(mochila.get_cost_benefit_ratio() >= (min_candidate - 0.0000000000000000000000000001))[0])
+            else:
+                random_index = np.random.choice(np.where((mochila.get_cost_benefit_ratio() >= min_candidate) & (mochila.get_cost_benefit_ratio() <= max_candidate))[0])
 
             if mochila.is_future_adding_valid(random_index):
                 mochila.add_item(random_index)
@@ -48,26 +47,28 @@ class BuscaLocal:
 
         Retorna: nova mochila com melhor solução encontrada ou a própria mochila se não houver melhoria.
         """
-        melhor_mochila = mochila.clone()
+        # melhor_mochila_itens = mochila.get_items().copy()
         melhor_valor = mochila.get_profit()
-        print(f"Profit inicial : {melhor_valor}")
+        # print(f"Profit inicial : {melhor_valor}")
         itens = mochila.get_items()
 
         dentro = np.where(itens == 1)[0]
         fora = np.where(itens == 0)[0]
 
         for i in dentro:
-            vizinho = mochila.clone()
-            
-            vizinho.remove_item(i)
-            potencial_profit = vizinho.get_potential_profits()
-            profit = vizinho.get_profit() 
+            vizinho_itens = itens.copy()
+            vizinho_itens[i] = 0
+            mochila.replace_items(vizinho_itens) 
+
+            potencial_profit = mochila.get_potential_profits()
+            profit = mochila.get_profit() 
             for j in fora:
-                if vizinho.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
-                    vizinho.add_item(j)
-                    melhor_mochila = vizinho.clone()
-                    melhor_valor = melhor_mochila.get_profit()
-                    vizinho.remove_item(j)     
+                if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
+                    mochila.add_item(j)
+                    melhor_mochila_itens = mochila.get_items().copy()
+                    melhor_valor = mochila.get_profit()
+                    mochila.remove_item(j)     
+        melhor_mochila = mochila.replace_items(melhor_mochila_itens)
         return melhor_mochila
     
     def primeiro_aprimorante(self, mochila):
