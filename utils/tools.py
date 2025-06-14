@@ -26,7 +26,31 @@ class Construcao:
             new_items[random_index] = 1
             mochila.replace_items(new_items)
         return current_items
-            
+
+    def perturbação(self,  mochila:Knapsack):
+        swap = 0
+
+        while mochila.is_valid():
+            itens = mochila.get_items()
+
+            dentro = np.where(itens == 1)[0]
+            fora = np.where(itens == 0)[0]
+            if swap < (len(dentro) * 0.1):
+
+                item_descartado = np.random.choice(dentro)
+                itens[item_descartado] = 0
+                mochila.replace_items(itens)
+
+                item_add = np.random.choice(fora)
+                new_items = itens.copy()
+                new_items[item_add] = 1
+                mochila.replace_items(new_items)
+
+                swap += 1
+            else: 
+                break
+        
+        return itens        
 
 
 
@@ -56,12 +80,16 @@ class BuscaLocal:
             profit = mochila.get_profit() 
             for j in fora:
                 if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
-                    mochila.add_item(j)
-                    melhor_mochila_itens = mochila.get_items().copy()
+                    vizinho_itens[j] = 1
+                    mochila.replace_items(vizinho_itens)
+
+                    melhor_mochila_itens = vizinho_itens.copy()
                     melhor_valor = mochila.get_profit()
-                    mochila.remove_item(j)     
-        melhor_mochila = mochila.replace_items(melhor_mochila_itens)
-        return melhor_mochila
+
+                    vizinho_itens[j] = 0
+                    mochila.replace_items(vizinho_itens)    
+       
+        return melhor_mochila_itens
     
     def primeiro_aprimorante(self, mochila):
         """
@@ -71,19 +99,20 @@ class BuscaLocal:
         Retorna: nova mochila com melhor solução encontrada ou a própria mochila se não houver melhoria.
         """
         melhor_valor = mochila.get_profit()
-        print(f"Profit inicial : {melhor_valor}")
         itens = mochila.get_items()
 
         dentro = np.where(itens == 1)[0]
         fora = np.where(itens == 0)[0]
 
         for i in dentro:
-            vizinho = mochila.clone()
-            
-            vizinho.remove_item(i)
-            potencial_profit = vizinho.get_potential_profits()
-            profit = vizinho.get_profit() 
-            for j in fora:
-                if vizinho.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
-                    vizinho.add_item(j)
-                    return vizinho   
+            vizinho_itens = itens.copy()
+            vizinho_itens[i] = 0
+            mochila.replace_items(vizinho_itens) 
+
+            potencial_profit = mochila.get_potential_profits()  
+            profit = mochila.get_profit() 
+            for j in fora:          
+                if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
+                    vizinho_itens[j] = 1
+                    mochila.replace_items(vizinho_itens)
+                    return vizinho_itens
