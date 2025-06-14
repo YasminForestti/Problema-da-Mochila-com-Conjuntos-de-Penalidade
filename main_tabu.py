@@ -6,19 +6,19 @@ import numpy as np
 import os
 from dotenv import load_dotenv
 import time
+from utils.logFiles import ExecutionLog
+from utils.openFiles import get_file_path
 
 load_dotenv(dotenv_path=".env") 
 INSTANCES_PATH = os.getenv('INSTANCES')
 
-data_1 = Data(f'{INSTANCES_PATH}/scenario2/correlated_sc2/300/kpfs_1.txt')
-m = Knapsack(data_1)
-start_time = time.time()
+file_path = get_file_path(1)
+data = Data(file_path)
+execution_log = ExecutionLog(file_path, '1')
+m = Knapsack(data)
 c = Construcao(1)
 initial_items = c.LCR(m)
 m.replace_items(initial_items)
-tabu_search(m, 5000, 100)
-end_time = time.time()
-print(f"Time taken: {end_time - start_time} seconds")
-print(m.get_items())
-print(m.get_profit())
+tabu_search(m, 1000, 10)
+execution_log.log_execution(m.get_profit(), m.get_items())
 
