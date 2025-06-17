@@ -9,7 +9,13 @@ if __name__ == "__main__":
 
     data_1 = Data(f"{INSTANCES_PATH}/scenario2/correlated_sc2/300/kpfs_1.txt")
 
-    opt = GeneticOptimizer(data_1, 50, 30, 0.1, 5, 200)
+    opt = GeneticOptimizer(data_1, 
+                           population_size=20,
+                           mutation_rate=0.25,
+                           crossover_size=10,
+                           replace_per_gen=5,
+                           max_steps=20000
+                           )
     # x = opt.cross(*opt.population)
     # x = opt.population[0]
     # print(x.knapsack.get_items())

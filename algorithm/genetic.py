@@ -33,9 +33,13 @@ class GeneticIndivivdual:
         idx = np.random.randint(self.gene_size - 1)
         # This violaters Knapsack's instance isolation for perfomance's sake
         self.knapsack._items[idx] = int(not self.knapsack._items[idx])
+
+    @property
+    def value(self) -> float:
+        return self.knapsack.get_profit()
     
     def __gt__(self, oth) -> bool:
-        return self.knapsack.get_profit() > oth.knapsack.get_profit()
+        return self.value > oth.value
 
 class GeneticOptimizer:
 
@@ -49,7 +53,8 @@ class GeneticOptimizer:
         self.population: list[GeneticIndivivdual] = []
         self.killAmt = replace_per_gen
         self.max_steps = max_steps
-        
+        self.best = None
+        self.best_val = -999999
 
         starting_sacks = [Knapsack(data) for _ in range(self.population_size)]
         for ks in starting_sacks:
@@ -61,10 +66,9 @@ class GeneticOptimizer:
         for e in self.population:
             e.mutate()
 
-        # self.population.sort(reverse=False)
-        self.population.sort()
+        self.population.sort(reverse=True)
+        # self.viz()
         self.population = self.population[:-self.killAmt]
-
         newborns = []
         for i, j in self.get_pairings():
             new_1, new_2 = self.cross(self.population[i], self.population[j])
@@ -76,14 +80,21 @@ class GeneticOptimizer:
     def run(self):
         for gen in range(1, self.max_steps + 1):
             self.step()
-            print(f"[Gen {gen}] Best score: {self.population[0].knapsack.get_profit()}")
+
+            gen_best = self.population[0]
+            if gen_best.value > self.best_val:
+                self.best = deepcopy(gen_best)
+                self.best_val = gen_best.value
+
+            print(f"[Gen {gen}] Best generational score: {self.population[0].value} | Best overall: {self.best_val}")
 
 
     def get_pairings(self) -> list[tuple[int, int]]:
         '''
         Create a list of indexes representing individuals in the population.
         '''
-        idxs = list(range(len(self.population)))
+        size = len(self.population) >> 1 << 1
+        idxs = list(range(size))
         shuffle(idxs)
         return list(batched(idxs, 2))
 
@@ -113,8 +124,7 @@ class GeneticOptimizer:
 
         return first, second
     
-    def viz_sort(self):
-        self.population.sort(reverse=True)
+    def viz(self):
         for i, d in enumerate(self.population, 1):
             print(f"{i}: $ {d.knapsack.get_profit()}")
-
+        input()
