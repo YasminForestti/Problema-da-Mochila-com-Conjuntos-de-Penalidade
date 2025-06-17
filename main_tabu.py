@@ -3,22 +3,24 @@ from utils.tools import Construcao
 from utils.data import Data
 from utils.knapsack import Knapsack
 import numpy as np
-import os
-from dotenv import load_dotenv
-import time
 from utils.logFiles import ExecutionLog
 from utils.openFiles import get_file_path
 
-load_dotenv(dotenv_path=".env") 
-INSTANCES_PATH = os.getenv('INSTANCES')
-
-file_path = get_file_path(1)
-data = Data(file_path)
-execution_log = ExecutionLog(file_path, '1')
-m = Knapsack(data)
-c = Construcao(1)
-initial_items = c.LCR(m)
-m.replace_items(initial_items)
-tabu_search(m, 1000, 10)
-execution_log.log_execution(m.get_profit(), m.get_items())
+numb_of_iter = [100, 500, 1000, 2000]
+tabu_size = [10, 20, 30, 40, 50]
+i = 1
+while True:
+    file_path = get_file_path(i)
+    if file_path is None or  'scenario2' in file_path:
+        break
+    data = Data(file_path)
+    guloso = Construcao(1)
+    for max_iter in numb_of_iter:
+        for tabu_size in tabu_size:
+            execution_log = ExecutionLog(file_path, iter, {'max_iter': max_iter, 'tabu_size': tabu_size})
+            mochila = Knapsack(data)
+            initial_items = guloso.LCR(mochila)
+            mochila.replace_items(initial_items)
+            best_items, best_profit = tabu_search(mochila, max_iter, tabu_size)
+            execution_log.log_execution(best_profit, best_items)
 
