@@ -1,11 +1,14 @@
 from random import shuffle
 from utils.knapsack import Knapsack
-from utils.tools import Construcao
-from utils.data import Data
-from utils.knapsack import Knapsack
 import numpy as np
 from itertools import batched
+from utils.data import Data
+from copy import deepcopy
 
+
+
+from utils.tools import Construcao
+c = Construcao(1)
 
 
 class GeneticIndivivdual:
@@ -31,27 +34,56 @@ class GeneticIndivivdual:
         # This violaters Knapsack's instance isolation for perfomance's sake
         self.knapsack._items[idx] = int(not self.knapsack._items[idx])
     
-    def __gt__(self, oth: GeneticIndivivdual) -> bool:
-        self.knapsack.get_profit() > oth.knapsack.get_profit()
+    def __gt__(self, oth) -> bool:
+        return self.knapsack.get_profit() > oth.knapsack.get_profit()
 
 class GeneticOptimizer:
 
-    def __init__(self, population_size: int, crossover_size: int, data: Data):
+    def __init__(self, data: Data, 
+                 population_size: int, mutation_rate: float,
+                 crossover_size: int, replace_per_gen: int, 
+                 max_steps: int):
         self.crossover_size = crossover_size
         self.population_size = population_size
         GeneticOptimizer.gene_size = 30
-        self.population = []
+        self.population: list[GeneticIndivivdual] = []
+        self.killAmt = replace_per_gen
+        self.max_steps = max_steps
+        
 
         starting_sacks = [Knapsack(data) for _ in range(self.population_size)]
         for ks in starting_sacks:
             c.LCR(ks)
-            self.population += [GeneticIndivivdual(ks, 0.01)]
+            self.population += [GeneticIndivivdual(ks, mutation_rate)]
+
+    def step(self):
+        
+        for e in self.population:
+            e.mutate()
+
+        # self.population.sort(reverse=False)
+        self.population.sort()
+        self.population = self.population[:-self.killAmt]
+
+        newborns = []
+        for i, j in self.get_pairings():
+            new_1, new_2 = self.cross(self.population[i], self.population[j])
+            newborns += [new_1, new_2]
+            if len(newborns) >= self.killAmt: break
+
+        self.population += newborns[:self.killAmt]
+
+    def run(self):
+        for gen in range(1, self.max_steps + 1):
+            self.step()
+            print(f"[Gen {gen}] Best score: {self.population[0].knapsack.get_profit()}")
+
 
     def get_pairings(self) -> list[tuple[int, int]]:
         '''
         Create a list of indexes representing individuals in the population.
         '''
-        idxs = list(range(self.population_size))
+        idxs = list(range(len(self.population)))
         shuffle(idxs)
         return list(batched(idxs, 2))
 
@@ -63,6 +95,9 @@ class GeneticOptimizer:
         the switched parts happen in the same part of each gene, in a
         continuous manner.
         '''
+        
+        first = deepcopy(first)
+        second = deepcopy(second)
 
         gene_1 = first.knapsack.get_items()
         gene_2 = second.knapsack.get_items()
@@ -71,30 +106,15 @@ class GeneticOptimizer:
         end = np.random.randint(start, cls.gene_size)
     
         tmp = gene_1[start:end].copy()
+
+        
         gene_1[start:end] = gene_2[start:end]
         gene_2[start:end] = tmp
+
+        return first, second
     
-    def sort(self):
-        self.population.sort()
+    def viz_sort(self):
+        self.population.sort(reverse=True)
         for i, d in enumerate(self.population, 1):
-            print(f"{i}. {d.knapsack.get_profit()}")
-if __name__ == "__main__":
-    import os
-
-    INSTANCES_PATH = os.getenv("INSTANCES")
-
-    data_1 = Data(f"{INSTANCES_PATH}/scenario2/correlated_sc2/300/kpfs_1.txt")
-    c = Construcao(1)
-
-    opt = GeneticOptimizer(2, 30, data_1)
-    # x = opt.cross(*opt.population)
-    x = opt.population[0]
-    print(x.knapsack.get_items())
-    for _ in range(10):
-        x.mutate()
-    print(x.knapsack.get_items())
-    # m.replace_items(initial_items)
-    # tabu_search(m, 5000, 100)
-    # end_time = time.time()
-    # print(f"Time taken: {end_time - start_time} seconds")
+            print(f"{i}: $ {d.knapsack.get_profit()}")
 
