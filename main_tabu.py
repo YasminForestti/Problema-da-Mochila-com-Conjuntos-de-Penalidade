@@ -17,10 +17,11 @@ while True:
     guloso = Construcao(1)
     for max_iter in numb_of_iter:
         for tabu_size in tabu_size:
-            execution_log = ExecutionLog(file_path, iter, {'max_iter': max_iter, 'tabu_size': tabu_size})
-            mochila = Knapsack(data)
-            initial_items = guloso.LCR(mochila)
-            mochila.replace_items(initial_items)
-            best_items, best_profit = tabu_search(mochila, max_iter, tabu_size)
-            execution_log.log_execution(best_profit, best_items)
+            for iter in range(10):
+                execution_log = ExecutionLog(file_path, iter, 'tabu', {'max_iter': max_iter, 'tabu_size': tabu_size})
+                mochila = Knapsack(data)
+                initial_items = guloso.LCR(mochila)
+                mochila.replace_items(initial_items)
+                best_items, best_profit = tabu_search(mochila, max_iter, tabu_size)
+                execution_log.log_execution(best_profit, best_items)
 

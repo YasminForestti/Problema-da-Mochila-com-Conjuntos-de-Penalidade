@@ -19,7 +19,7 @@ while True:
     for tipo_busca_local in busca_local:
         for alfa in alfas:
             for max_iter in numb_of_iter:
-                execution_log = ExecutionLog(file_path, iter, {'max_iter': max_iter, 'alfa': alfa, 'Busca Local': tipo_busca_local})
+                execution_log = ExecutionLog(file_path, iter, 'GRASP', {'max_iter': max_iter, 'alfa': alfa, 'Busca Local': tipo_busca_local})
                 
                 mochila = Knapsack(data)
                 model_method = model(mochila, busca = tipo_busca_local)
