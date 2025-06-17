@@ -124,6 +124,10 @@ class GeneticOptimizer:
 
         return first, second
     
+    @property
+    def best_knapsack(self) -> Knapsack:
+        return self.best.knapsack
+
     def viz(self):
         for i, d in enumerate(self.population, 1):
             print(f"{i}: $ {d.knapsack.get_profit()}")
