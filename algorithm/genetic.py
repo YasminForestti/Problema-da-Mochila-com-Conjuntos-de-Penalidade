@@ -99,7 +99,7 @@ class GeneticOptimizer:
         return list(batched(idxs, 2))
 
     @classmethod
-    def cross(cls, first: GeneticIndivivdual, second: GeneticIndivivdual):
+    def cross(cls, par_1: GeneticIndivivdual, par_2: GeneticIndivivdual):
         '''
         Mix the genes of the first and second individual.
         The size of the change is determined by a crossover_size, and
@@ -107,8 +107,8 @@ class GeneticOptimizer:
         continuous manner.
         '''
         
-        first = deepcopy(first)
-        second = deepcopy(second)
+        first = deepcopy(par_1)
+        second = deepcopy(par_2)
 
         gene_1 = first.knapsack.get_items()
         gene_2 = second.knapsack.get_items()
