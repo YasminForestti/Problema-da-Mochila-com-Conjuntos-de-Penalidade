@@ -63,7 +63,7 @@ class BuscaLocal:
 
         Retorna: nova mochila com melhor solução encontrada ou a própria mochila se não houver melhoria.
         """
-        # melhor_mochila_itens = mochila.get_items().copy()
+        melhor_mochila_itens = mochila.get_items().copy()
         melhor_valor = mochila.get_profit()
         # print(f"Profit inicial : {melhor_valor}")
         itens = mochila.get_items()
