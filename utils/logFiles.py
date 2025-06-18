@@ -14,13 +14,13 @@ class ExecutionLog:
     def log_execution(self, best_profit, best_items):
         end_time = time.time()
         time_taken = end_time - self.start_time
-        
+        best_items = [str(item//1) for item in best_items]
         # Create new row data
         new_row = {
             'run_count': self.run_count,
             'hyperparams': self.hyperparams,
             'best_profit': best_profit,
-            'best_items': f"[{';'.join(best_items.astype(str))}]",
+            'best_items': f"[{';'.join(best_items)}]",
             'time_taken': time_taken
         }
         

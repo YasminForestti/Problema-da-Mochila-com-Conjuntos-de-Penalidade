@@ -14,19 +14,23 @@ while True:
     file_path = get_file_path(i)
     if file_path is None or  'scenario2' in file_path:
         break
-    data = Data(file_path)
-    for tipo_busca_local in busca_local:
-        for max_iter in numb_of_iter:
-            execution_log = ExecutionLog(file_path, iter, 'ILS', {'max_iter': max_iter, 'Busca Local': tipo_busca_local})
+    try:
+        data = Data(file_path)
+        for tipo_busca_local in busca_local:
+            for max_iter in numb_of_iter:
+                for iter in range(5):
+                    execution_log = ExecutionLog(file_path, iter, 'ILS', {'max_iter': max_iter, 'Busca Local': tipo_busca_local})
 
-            mochila = Knapsack(data)
-            model_method = model(mochila, busca = tipo_busca_local)
-            
-            melhor_items_mochila = model_method.ILS(criterio_parada=max_iter)
+                    mochila = Knapsack(data)
+                    model_method = model(mochila, busca = tipo_busca_local)
+                    
+                    melhor_items_mochila = model_method.ILS(criterio_parada=max_iter)
 
-            mochila.replace_items(melhor_items_mochila)
-            best_profit = mochila.get_profit()
-            best_items = melhor_items_mochila
+                    mochila.replace_items(melhor_items_mochila)
+                    best_profit = mochila.get_profit()
+                    best_items = melhor_items_mochila
 
-            execution_log.log_execution(best_profit, best_items)
-
+                    execution_log.log_execution(best_profit, best_items)
+    except: 
+        print(f"Error in file {file_path}")
+    i+=1
