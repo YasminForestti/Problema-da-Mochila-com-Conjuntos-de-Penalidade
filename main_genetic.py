@@ -1,21 +1,59 @@
-from algorithm.genetic import GeneticOptimizer
 from utils.data import Data
+from utils.logFiles import ExecutionLog
+from utils.openFiles import get_file_path
+from algorithm.genetic import GeneticOptimizer
 
 
-if __name__ == "__main__":
-    import os
+param_grid = [
+    dict(
+        population_size=50,
+        mutation_rate=0.25,
+        crossover_size=10,
+        replace_per_gen=12,
+        max_steps=500,
+    ),
+    dict(
+        population_size=100,
+        mutation_rate=0.25,
+        crossover_size=10,
+        replace_per_gen=25,
+        max_steps=500,
+    ),
+    dict(
+        population_size=50,
+        mutation_rate=0.25,
+        crossover_size=10,
+        replace_per_gen=12,
+        max_steps=1000,
+    ),
+    dict(
+        population_size=100,
+        mutation_rate=0.25,
+        crossover_size=10,
+        replace_per_gen=25,
+        max_steps=1000,
+    ),
+]
 
-    INSTANCES_PATH = os.getenv("INSTANCES")
+i = 1
+while True:
+    file_path = get_file_path(i)
+    if file_path is None or "scenario2" in file_path:
+        break
+    try:
+        data = Data(file_path)
+        for params in param_grid:
+            for iter in range(5):
+                execution_log = ExecutionLog(file_path, iter, "Genetic", params)
+                opt = GeneticOptimizer(data, **params)
+                opt.run()
 
-    data_1 = Data(f"{INSTANCES_PATH}/scenario2/correlated_sc2/300/kpfs_1.txt")
+                best_ks = opt.best_knapsack
+                best_profit = best_ks.get_profit()
+                best_items = best_ks.get_items()
 
-    opt = GeneticOptimizer(data_1, 
-                           population_size=100,
-                           mutation_rate=0.25,
-                           crossover_size=10,
-                           replace_per_gen=25,
-                           max_steps=1000
-                           )
-
-    opt.run()
-
+                execution_log.log_execution(best_profit, best_items)
+    except Exception as e:
+        print(e)
+        print(f"Error in file {file_path}")
+    i += 1
