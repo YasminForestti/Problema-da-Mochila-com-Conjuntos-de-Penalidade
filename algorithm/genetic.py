@@ -65,12 +65,12 @@ class GeneticOptimizer:
         self.best_val = -999999
         self.mutation_rate = mutation_rate
 
+        self.knapsack = Knapsack(data)
         for i in range(population_size):
-            ks = Knapsack(data)
-            c.LCR(ks)
-            items = ks.get_items().copy()
-            self.population += [GeneticIndivivdual(items, ks, mutation_rate)]
-        self.knapsack = ks
+            c.LCR(self.knapsack)
+            items = self.knapsack.get_items().copy()
+            self.knapsack.replace_items(np.zeros_like(items))
+            self.population += [GeneticIndivivdual(items, self.knapsack, mutation_rate)]
 
     def step(self):
 
