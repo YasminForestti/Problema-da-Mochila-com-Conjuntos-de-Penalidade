@@ -1,31 +1,28 @@
 from algorithm.tabu import tabu_search
-from utils.tools import Construcao 
+from utils.tools import Construcao
 from utils.data import Data
 from utils.knapsack import Knapsack
 import numpy as np
 from utils.logFiles import ExecutionLog
 from utils.openFiles import get_file_path
+from cProfile import Profile
+from pstats import Stats, SortKey
+
 
 numb_of_iter = [100, 500, 1000]
 tabu_size = [10, 20, 30, 40, 50]
 i = 1
-while True:
-    file_path = get_file_path(i)
-    if file_path is None or  'scenario2' in file_path:
-        break
-    try:
-        data = Data(file_path)
-        guloso = Construcao(1)
-        for max_iter in numb_of_iter:
-            for size in tabu_size:
-                for iter in range(5):
-                    execution_log = ExecutionLog(file_path, iter, 'tabu', {'max_iter': max_iter, 'tabu_size': size})
-                    mochila = Knapsack(data)
-                    initial_items = guloso.LCR(mochila)
-                    mochila.replace_items(initial_items)
-                    best_items, best_profit = tabu_search(mochila, max_iter, size)
-                    execution_log.log_execution(best_profit, best_items)
-    except: 
-        print(f"Error in file {file_path}")
-    i+=1
+file_path = get_file_path(i)
 
+data = Data(file_path)
+guloso = Construcao(1)
+
+mochila = Knapsack(data)
+initial_items = guloso.LCR(mochila)
+mochila.replace_items(initial_items)
+
+with Profile() as p:
+    best_items, best_profit = tabu_search(mochila, 1000, 50)
+s = Stats(p)
+s.sort_stats(SortKey.TIME)
+s.dump_stats("tabu.prof")
