@@ -9,10 +9,10 @@ from utils.openFiles import get_file_path
 numb_of_iter = [100, 500, 1000]
 tabu_size = [10, 20, 30, 40, 50]
 i = 1
-while True:
-    file_path = get_file_path(i)
-    if file_path is None or  'scenario2' in file_path:
-        break
+while i < 31:
+    file_path = get_file_path(i,mode='size')
+    # if file_path is None or  'scenario2' in file_path:
+    #     break
     try:
         data = Data(file_path)
         solution = Construcao(1)
@@ -27,5 +27,6 @@ while True:
                     execution_log.log_execution(best_profit, best_items)
     except: 
         print(f"Error in file {file_path}")
+    print(f'{i}/30 done')
     i+=1
 

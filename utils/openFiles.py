@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 from dotenv import load_dotenv
 
 def save_file_paths(filename='file_paths.txt'):
@@ -20,12 +21,13 @@ def save_file_paths(filename='file_paths.txt'):
                         file_path = f'{INSTANCES_PATH}/{scenario}/{type}/{size}/kpfs_{i}.txt'
                         f.write(file_path + '\n')
 
-def get_file_path(i):
+def get_file_path(i, mode:Literal['scenario','size']='scenario'):
     """ Função que lê a linha i do arquivo file_paths.txt.
         Começa em 1.
     """
+    file_path = 'file_paths_by_scenario.txt' if mode == 'scenario' else 'file_paths_by_size.txt'
     try:
-        with open('file_paths.txt', 'r') as f:
+        with open(file_path, 'r') as f:
             for line_num, line in enumerate(f, 1):
                 if line_num == i:
                     return line.strip()
