@@ -79,15 +79,14 @@ class BuscaLocal:
             potencial_profit = mochila.get_potential_profits()
             profit = mochila.get_profit() 
             for j in fora:
-                if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
+                if potencial_profit[j] + profit > melhor_valor:
                     vizinho_itens[j] = 1
                     mochila.replace_items(vizinho_itens)
-
-                    melhor_mochila_itens = vizinho_itens.copy()
-                    melhor_valor = mochila.get_profit()
-
+                    if mochila.is_valid():
+                        melhor_mochila_itens = vizinho_itens.copy()
+                        melhor_valor = mochila.get_profit()
                     vizinho_itens[j] = 0
-                    mochila.replace_items(vizinho_itens)    
+                    mochila.replace_items(vizinho_itens)                     
        
         return melhor_mochila_itens
     
@@ -112,7 +111,10 @@ class BuscaLocal:
             potencial_profit = mochila.get_potential_profits()  
             profit = mochila.get_profit() 
             for j in fora:          
-                if mochila.is_future_adding_valid(j) and potencial_profit[j] + profit > melhor_valor:
+                if potencial_profit[j] + profit > melhor_valor:
                     vizinho_itens[j] = 1
                     mochila.replace_items(vizinho_itens)
-                    return vizinho_itens
+                    if mochila.is_valid():
+                        return vizinho_itens
+                    vizinho_itens[j] = 0
+                    mochila.replace_items(vizinho_itens)  

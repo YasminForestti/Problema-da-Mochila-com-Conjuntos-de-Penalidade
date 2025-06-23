@@ -1,13 +1,11 @@
 from algorithm.methods import model
-from utils.tools import Construcao 
 from utils.data import Data
 from utils.knapsack import Knapsack
-import numpy as np
 from utils.logFiles import ExecutionLog
 from utils.openFiles import get_file_path
 
 numb_of_iter = [100, 500, 1000, 2000]
-alfas = [0.3,0.5, 0.8,0.95]
+alfas = [0.05,0.2,0.5, 0.8]
 busca_local = ['melhor', 'primeiro']
 
 i = 1

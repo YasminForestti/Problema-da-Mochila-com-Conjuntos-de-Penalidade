@@ -60,7 +60,7 @@ class Knapsack:
         """
         Get the potential profits of the items outside the knapsack.
         """
-        current_profits = self._profits * (1 - self._items)
+        current_profits = self._profits * (self._items*(-9999999999))
         return current_profits - (self._penalties @ self._items.T)
 
     def get_cost_benefit_ratio(self):
@@ -129,14 +129,14 @@ class Knapsack:
         """
         return self._weights @ self._items.T
 
-    # def get_weights(self):
-    #     """
-    #     Get the weights of the items in the knapsack.
+    def get_weights(self):
+        """
+        Get the weights of the items in the knapsack.
 
-    #     Returns:
-    #         np.ndarray: An array of weights for the items.
-    #     """
-    #     return self._weights
+        Returns:
+            np.ndarray: An array of weights for the items.
+        """
+        return self._weights
 
     def get_items(self):
         """
