@@ -141,8 +141,8 @@ class GeneticOptimizer:
             gene_1[start:end] = gene_2[start:end]
             gene_2[start:end] = tmp
 
-            g1_valid = self.best_knapsack.is_valid_given_items(gene_1)
-            g2_valid = self.best_knapsack.is_valid_given_items(gene_2)
+            g1_valid = self.knapsack.is_valid_given_items(gene_1)
+            g2_valid = self.knapsack.is_valid_given_items(gene_2)
 
             if g1_valid and g2_valid:
                 first = GeneticIndivivdual(gene_1, self.knapsack, self.mutation_rate)
