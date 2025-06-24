@@ -1,14 +1,13 @@
-from algorithm.genetic_constraintless import GeneticOptimizerNoConstraint
 from utils.data import Data
 from utils.logFiles import ExecutionLog
 from utils.openFiles import get_file_path
 from algorithm.genetic import GeneticOptimizer
+from algorithm.genetic_constraintless import GeneticOptimizerNoConstraint
 from multiprocessing import Pool
-from os import environ
 
-
-print(f"INSTANCES={environ["INSTANCES"]}")
 USE_PENALIZED = True
+if USE_PENALIZED:
+    print("Starting without constraints")
 
 param_grid = [
     dict(
@@ -46,7 +45,7 @@ def test_alg(iter: int):
 
     execution_log = ExecutionLog(file_path, iter, "Genetic", params)
     if USE_PENALIZED:
-        opt =  GeneticOptimizerNoConstraint(data, **params)
+        opt = GeneticOptimizerNoConstraint(data, **params)
     else:
         opt = GeneticOptimizer(data, **params)
     best_ks = opt.run()
@@ -57,17 +56,16 @@ def test_alg(iter: int):
 
 
 i = 1
-while True:
-    # file_path = get_file_path(i, mode="size")
-    file_path = "data/scenario1/not_correlated_sc1/300/kpfs_1.txt"
+
+while i < 31:
+    file_path = get_file_path(i)
     if file_path is None or "scenario2" in file_path:
         break
     try:
         data = Data(file_path)
         for params in param_grid:
-            for iter in range(5):
-                with Pool(5) as p:
-                    _ = p.map(test_alg, list(range(5)))
+            with Pool(5) as p:
+                _ = p.map(test_alg, list(range(5)))
 
     except Exception as e:
         print(e)
