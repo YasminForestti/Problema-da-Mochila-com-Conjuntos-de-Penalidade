@@ -33,8 +33,17 @@ class GeneticIndivivdual:
         """
         Change a single item in the knapsack, inverting its value.
         """
-        idx = np.random.randint(self.gene_size - 1)
-        self.items[idx] = int(not self.items[idx])
+
+        while True:
+            idx = np.random.randint(self.gene_size - 1)
+            self.items[idx] = int(not self.items[idx])
+
+            valid = self.knapsack.is_valid_given_items(self.items)
+
+            if not valid:  # Undo and try again
+                self.items[idx] = int(not self.items[idx])
+            else:
+                return
 
     @property
     def value(self) -> float:
@@ -123,18 +132,23 @@ class GeneticOptimizer:
         gene_1 = first.items.copy()
         gene_2 = second.items.copy()
 
-        start = np.random.randint(self.gene_size)
-        end = np.random.randint(start, self.gene_size)
+        while True:
+            start = np.random.randint(self.gene_size)
+            end = np.random.randint(start, self.gene_size)
 
-        tmp = gene_1[start:end].copy()
+            tmp = gene_1[start:end].copy()
 
-        gene_1[start:end] = gene_2[start:end]
-        gene_2[start:end] = tmp
+            gene_1[start:end] = gene_2[start:end]
+            gene_2[start:end] = tmp
 
-        first = GeneticIndivivdual(gene_1, self.knapsack, self.mutation_rate)
-        second = GeneticIndivivdual(gene_2, self.knapsack, self.mutation_rate)
+            g1_valid = self.best_knapsack.is_valid_given_items(gene_1)
+            g2_valid = self.best_knapsack.is_valid_given_items(gene_2)
 
-        return first, second
+            if g1_valid and g2_valid:
+                first = GeneticIndivivdual(gene_1, self.knapsack, self.mutation_rate)
+                second = GeneticIndivivdual(gene_2, self.knapsack, self.mutation_rate)
+
+                return first, second
 
     @property
     def best_knapsack(self) -> Knapsack:

@@ -60,7 +60,7 @@ class Knapsack:
         """
         Get the potential profits of the items outside the knapsack.
         """
-        current_profits = self._profits * (self._items*(-9999999999))
+        current_profits = self._profits * (self._items * (-9999999999))
         return current_profits - (self._penalties @ self._items.T)
 
     def get_cost_benefit_ratio(self):
@@ -103,6 +103,16 @@ class Knapsack:
             bool: True if the knapsack is valid, False otherwise.
         """
         weight = self._weights @ self._items.T
+        return weight <= self._max_weight
+
+    def is_valid_given_items(self, items: np.array):
+        """
+        Check if the knapsack is valid from a given set of items.
+
+        Returns:
+            bool: True if the knapsack is valid, False otherwise.
+        """
+        weight = self._weights @ items.T
         return weight <= self._max_weight
 
     def is_future_adding_valid(self, item_id):
