@@ -56,6 +56,12 @@ class Knapsack:
         profits = self._profits @ items.T
         return profits - penalties
 
+    def get_penalized_profits_given_items(self, items: np.array):
+
+        if not self.is_valid_given_items(items):
+            return -99999
+        return self.get_profit_given_items(items)
+
     def get_potential_profits(self):
         """
         Get the potential profits of the items outside the knapsack.

@@ -9,11 +9,9 @@ from copy import deepcopy
 from utils.tools import Construcao
 
 c = Construcao(1)
-RETRIES_MUTATION = 500
-RETRIES_CROSS = 5000
 
 
-class GeneticIndivivdual:
+class GeneticIndividualNoConstraint:
 
     def __init__(
         self, starting_items: np.array, knapsack: Knapsack, mutation_rate: float
@@ -35,28 +33,18 @@ class GeneticIndivivdual:
         """
         Change a single item in the knapsack, inverting its value.
         """
-
-        for _ in range(RETRIES_MUTATION):
-            idx = np.random.randint(self.gene_size - 1)
-            self.items[idx] = int(not self.items[idx])
-
-            valid = self.knapsack.is_valid_given_items(self.items)
-
-            if not valid:  # Undo and try again
-                self.items[idx] = int(not self.items[idx])
-            else:
-                return
-        raise Exception("Mutate retries exceed")
+        idx = np.random.randint(self.gene_size - 1)
+        self.items[idx] = int(not self.items[idx])
 
     @property
     def value(self) -> float:
-        return self.knapsack.get_profit_given_items(self.items)
+        return self.knapsack.get_penalized_profits_given_items(self.items)
 
     def __gt__(self, oth) -> bool:
         return self.value > oth.value
 
 
-class GeneticOptimizer:
+class GeneticOptimizerNoConstraint:
 
     def __init__(
         self,
@@ -70,7 +58,7 @@ class GeneticOptimizer:
         self.crossover_size = crossover_size
         self.population_size = population_size
         self.gene_size = 30
-        self.population: list[GeneticIndivivdual] = []
+        self.population: list[GeneticIndividualNoConstraint] = []
         self.killAmt = replace_per_gen
         self.max_steps = max_steps
         self.best = None
@@ -82,7 +70,9 @@ class GeneticOptimizer:
             c.LCR(self.knapsack)
             items = self.knapsack.get_items().copy()
             self.knapsack.replace_items(np.zeros_like(items))
-            self.population += [GeneticIndivivdual(items, self.knapsack, mutation_rate)]
+            self.population += [
+                GeneticIndividualNoConstraint(items, self.knapsack, mutation_rate)
+            ]
 
     def step(self):
 
@@ -110,9 +100,6 @@ class GeneticOptimizer:
                 self.best = deepcopy(gen_best)
                 self.best_val = gen_best.value
 
-            print(
-                f"[Gen {gen}] Best generational score: {self.population[0].value} | Best overall: {self.best_val}"
-            )
         return self.best_knapsack
 
     def get_pairings(self) -> list[tuple[int, int]]:
@@ -124,7 +111,11 @@ class GeneticOptimizer:
         shuffle(idxs)
         return list(batched(idxs, 2))
 
-    def cross(self, first: GeneticIndivivdual, second: GeneticIndivivdual):
+    def cross(
+        self,
+        first: GeneticIndividualNoConstraint,
+        second: GeneticIndividualNoConstraint,
+    ):
         """
         Mix the genes of the first and second individual.
         The size of the change is determined by a crossover_size, and
@@ -135,26 +126,20 @@ class GeneticOptimizer:
         gene_1 = first.items.copy()
         gene_2 = second.items.copy()
 
-        for _ in range(RETRIES_CROSS):
+        start = np.random.randint(self.gene_size)
+        end = np.random.randint(start, self.gene_size)
 
-            start = np.random.randint(self.gene_size)
-            end = np.random.randint(start, self.gene_size)
+        tmp = gene_1[start:end].copy()
 
-            tmp = gene_1[start:end].copy()
+        gene_1[start:end] = gene_2[start:end]
+        gene_2[start:end] = tmp
 
-            gene_1[start:end] = gene_2[start:end]
-            gene_2[start:end] = tmp
+        first = GeneticIndividualNoConstraint(gene_1, self.knapsack, self.mutation_rate)
+        second = GeneticIndividualNoConstraint(
+            gene_2, self.knapsack, self.mutation_rate
+        )
 
-            g1_valid = self.knapsack.is_valid_given_items(gene_1)
-            g2_valid = self.knapsack.is_valid_given_items(gene_2)
-
-            if g1_valid and g2_valid:
-                first = GeneticIndivivdual(gene_1, self.knapsack, self.mutation_rate)
-                second = GeneticIndivivdual(gene_2, self.knapsack, self.mutation_rate)
-
-                return first, second
-
-        raise Exception("Crossover retries exceed")
+        return first, second
 
     @property
     def best_knapsack(self) -> Knapsack:
